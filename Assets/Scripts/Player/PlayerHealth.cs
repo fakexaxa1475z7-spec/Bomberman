@@ -5,7 +5,9 @@ using System;
 public class PlayerHealth : MonoBehaviour, IDamageable
 {
     [Header("Health")]
-    [SerializeField] private int maxHealth = 3;
+
+    [SerializeField] private int startingHealth = 2;
+    [SerializeField] private int maxHealth = 100;
     [SerializeField] private float invincibilityDuration = 1.5f;
 
     private int currentHealth;
@@ -17,11 +19,12 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
+    public int StartingHealth => startingHealth;
     public bool IsDead => isDead;
 
     void Awake()
     {
-        currentHealth = maxHealth;
+        currentHealth = startingHealth;
     }
 
     public void TakeDamage(int amount)
@@ -31,7 +34,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         currentHealth -= amount;
         currentHealth = Mathf.Max(currentHealth, 0);
 
-        OnHealthChanged?.Invoke(currentHealth, maxHealth);
+        OnHealthChanged?.Invoke(currentHealth, startingHealth);
 
         if (currentHealth <= 0)
         {
@@ -68,11 +71,11 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public void ResetHealth()
     {
-        currentHealth = maxHealth;
+        currentHealth = startingHealth;
         isDead = false;
         isInvincible = false;
         StopAllCoroutines();
 
-        OnHealthChanged?.Invoke(currentHealth, maxHealth);
+        OnHealthChanged?.Invoke(currentHealth, startingHealth);
     }
 }

@@ -166,6 +166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationController
   animator: {fileID: 4365206639912613136}
   movement: {fileID: 9097854167605051038}
+  health: {fileID: 0}
 --- !u!114 &6033748268444770642
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,12 +179,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8e4cf0e0dc5efb42a944eca866254bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  maxHealth: 3
+  maxHealth: 1000
   invincibilityDuration: 1.5
-  playerRenderer: {fileID: 5965724557499862001}
-  normalColor: {r: 1, g: 1, b: 1, a: 1}
-  hitColor: {r: 1, g: 0, b: 0, a: 1}
-  flashSpeed: 8
 --- !u!1001 &2007985942948452674
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -286,10 +283,5 @@ Animator:
 --- !u!4 &2042230625222983337 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
-  m_PrefabInstance: {fileID: 2007985942948452674}
-  m_PrefabAsset: {fileID: 0}
---- !u!137 &5965724557499862001 stripped
-SkinnedMeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 5266764545580405427, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
   m_PrefabInstance: {fileID: 2007985942948452674}
   m_PrefabAsset: {fileID: 0}
