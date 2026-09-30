@@ -56,12 +56,15 @@ public class StageFlowManager : MonoBehaviour
             yield break;
         }
 
-        // Hide HUD immediately when a transition starts — covers the fade-out window too, not just the destination scene
         HUDManager.Instance?.HideHUD();
 
         if (fadeController != null)
         {
-            fadeController.SetStageText(label);
+            if (!string.IsNullOrEmpty(label))
+                fadeController.SetStageText(label);
+            else
+                fadeController.HideStageText();
+
             yield return fadeController.FadeOut();
         }
 
@@ -110,5 +113,10 @@ public class StageFlowManager : MonoBehaviour
             HUDManager.Instance?.ShowHUD();
         else
             HUDManager.Instance?.HideHUD();
+    }
+    public void ReturnToMainMenu()
+    {
+        HUDManager.Instance?.ResetScore();
+        LoadSceneWithFade(mainMenuBuildIndex, null);
     }
 }

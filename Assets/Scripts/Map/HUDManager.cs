@@ -7,12 +7,18 @@ public class HUDManager : MonoBehaviour
 {
     public static HUDManager Instance { get; private set; }
 
+    [Header("HUD")]
     [SerializeField] private TextMeshProUGUI timeText;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI lifeText;
-    [SerializeField] private CanvasGroup hudCanvasGroup; // lets us hide the whole HUD on the main menu
+    [SerializeField] private CanvasGroup hudCanvasGroup;
 
-    [SerializeField] private int mainMenuBuildIndex = 0; // HUD hides on this scene, shows everywhere else
+    [Header("Game Over")]
+    [SerializeField] private GameObject gameOverPanel;
+    [SerializeField] private float delayBeforeGameOver = 1f;
+
+    [Header("Scene")]
+    [SerializeField] private int mainMenuBuildIndex = 0;
 
     private int score = 0;
     private float stageTimer = 0f;
@@ -30,6 +36,9 @@ public class HUDManager : MonoBehaviour
         Instance = this;
         UpdateScoreText();
 
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
+
         bool isMainMenu = SceneManager.GetActiveScene().buildIndex == mainMenuBuildIndex;
         SetHUDVisible(!isMainMenu);
     }
@@ -43,20 +52,13 @@ public class HUDManager : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-    public void ShowHUD()
-    {
-        SetHUDVisible(true);
-    }
-
-    public void HideHUD()
-    {
-        SetHUDVisible(false);
-    }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         bool isMainMenu = scene.buildIndex == mainMenuBuildIndex;
-        SetHUDVisible(!isMainMenu);
+
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
 
         if (!isMainMenu)
         {
@@ -66,19 +68,12 @@ public class HUDManager : MonoBehaviour
         else
         {
             timerRunning = false;
+            SetHUDVisible(false);
         }
-    }
-
-    void SetHUDVisible(bool visible)
-    {
-        if (hudCanvasGroup == null) return;
-        hudCanvasGroup.alpha = visible ? 1f : 0f;
-        hudCanvasGroup.blocksRaycasts = visible;
     }
 
     IEnumerator FindAndTrackPlayer()
     {
-        // Player is spawned dynamically by PlayerSpawner — wait until it exists
         PlayerHealth player = null;
         float timeout = 3f;
         float elapsed = 0f;
@@ -94,13 +89,17 @@ public class HUDManager : MonoBehaviour
         }
 
         if (trackedPlayerHealth != null)
+        {
             trackedPlayerHealth.OnHealthChanged -= UpdateLifeText;
+            trackedPlayerHealth.OnDeath -= HandlePlayerDeath;
+        }
 
         trackedPlayerHealth = player;
 
         if (trackedPlayerHealth != null)
         {
             trackedPlayerHealth.OnHealthChanged += UpdateLifeText;
+            trackedPlayerHealth.OnDeath += HandlePlayerDeath;
             UpdateLifeText(trackedPlayerHealth.CurrentHealth, trackedPlayerHealth.MaxHealth);
             timerRunning = true;
         }
@@ -109,6 +108,47 @@ public class HUDManager : MonoBehaviour
             Debug.LogWarning("HUDManager: no PlayerHealth found in scene within timeout.");
         }
     }
+
+    void HandlePlayerDeath()
+    {
+        timerRunning = false;
+        Invoke(nameof(ShowGameOverPanel), delayBeforeGameOver);
+    }
+
+    void ShowGameOverPanel()
+    {
+        SetHUDVisible(false);
+
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(true);
+    }
+
+    public void OnRetryPressed()
+    {
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
+
+        int currentIndex = SceneManager.GetActiveScene().buildIndex;
+        StageFlowManager.Instance?.LoadSceneWithFade(currentIndex, null);
+    }
+
+    public void OnReturnToMenuPressed()
+    {
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
+
+        StageFlowManager.Instance?.ReturnToMainMenu();
+    }
+
+    void SetHUDVisible(bool visible)
+    {
+        if (hudCanvasGroup == null) return;
+        hudCanvasGroup.alpha = visible ? 1f : 0f;
+        hudCanvasGroup.blocksRaycasts = visible;
+    }
+
+    public void ShowHUD() => SetHUDVisible(true);
+    public void HideHUD() => SetHUDVisible(false);
 
     void Update()
     {
@@ -122,13 +162,14 @@ public class HUDManager : MonoBehaviour
     {
         stageTimer = 0f;
         timerRunning = false;
-        //UpdateTimeText();
+        UpdateTimeText();
     }
 
     void UpdateTimeText()
     {
         if (timeText == null) return;
 
+        int minutes = Mathf.FloorToInt(stageTimer / 60f);
         int seconds = Mathf.FloorToInt(stageTimer % 60f);
         timeText.text = $"TIME {seconds:0}";
     }
@@ -142,6 +183,12 @@ public class HUDManager : MonoBehaviour
     public void AddScore(int amount)
     {
         score += amount;
+        UpdateScoreText();
+    }
+
+    public void ResetScore()
+    {
+        score = 0;
         UpdateScoreText();
     }
 

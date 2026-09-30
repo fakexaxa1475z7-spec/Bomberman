@@ -46,4 +46,8 @@ public class MainMenuManager : MonoBehaviour
         var selected = UnityEngine.EventSystems.EventSystem.current?.currentSelectedGameObject;
         Debug.Log($"Currently selected: {(selected != null ? selected.name : "NOTHING")}");
     }
+    public void OnReturnToMenuPressed()
+    {
+        StageFlowManager.Instance?.ReturnToMainMenu();
+    }
 }
