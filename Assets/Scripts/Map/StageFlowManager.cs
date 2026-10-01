@@ -40,7 +40,13 @@ public class StageFlowManager : MonoBehaviour
     {
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
         int nextIndex = currentIndex + 1;
-        LoadSceneWithFade(nextIndex, $"STAGE {nextIndex}");
+        LoadSceneWithFade(nextIndex, $"Stage {nextIndex}");
+    }
+
+    public void ReturnToMainMenu()
+    {
+        HUDManager.Instance?.ResetScore();
+        LoadSceneWithFade(mainMenuBuildIndex, null);
     }
 
     public void LoadSceneWithFade(int sceneIndex, string label)
@@ -104,19 +110,13 @@ public class StageFlowManager : MonoBehaviour
         if (fadeController == null) yield break;
 
         yield return null;
-        yield return new WaitForSeconds(delayAfterLoad);
+        yield return new WaitForSecondsRealtime(delayAfterLoad); // immune to pause
         yield return fadeController.FadeIn();
 
-        // Only show the HUD if we actually entered a real stage, not the main menu
         bool isMainMenu = loadedSceneIndex == mainMenuBuildIndex;
         if (!isMainMenu)
             HUDManager.Instance?.ShowHUD();
         else
             HUDManager.Instance?.HideHUD();
-    }
-    public void ReturnToMainMenu()
-    {
-        HUDManager.Instance?.ResetScore();
-        LoadSceneWithFade(mainMenuBuildIndex, null);
     }
 }

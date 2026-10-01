@@ -51,7 +51,7 @@ public class FadeController : MonoBehaviour
         {
             float t = elapsed / fadeDuration;
             fadeCanvasGroup.alpha = Mathf.Lerp(from, to, t);
-            elapsed += Time.deltaTime;
+            elapsed += Time.unscaledDeltaTime; // immune to pause (Time.timeScale = 0)
             yield return null;
         }
 

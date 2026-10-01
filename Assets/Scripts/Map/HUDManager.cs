@@ -17,6 +17,9 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private float delayBeforeGameOver = 1f;
 
+    [Header("Pause")]
+    [SerializeField] private GameObject pausePanel;
+
     [Header("Scene")]
     [SerializeField] private int mainMenuBuildIndex = 0;
 
@@ -24,6 +27,9 @@ public class HUDManager : MonoBehaviour
     private float stageTimer = 0f;
     private bool timerRunning = false;
     private PlayerHealth trackedPlayerHealth;
+
+    private bool isPaused = false;
+    private bool gameOverActive = false;
 
     void Awake()
     {
@@ -38,6 +44,9 @@ public class HUDManager : MonoBehaviour
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
 
         bool isMainMenu = SceneManager.GetActiveScene().buildIndex == mainMenuBuildIndex;
         SetHUDVisible(!isMainMenu);
@@ -59,6 +68,13 @@ public class HUDManager : MonoBehaviour
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        isPaused = false;
+        gameOverActive = false;
+        Time.timeScale = 1f; // safety net — never carry a frozen timescale into a new scene
 
         if (!isMainMenu)
         {
@@ -112,6 +128,7 @@ public class HUDManager : MonoBehaviour
     void HandlePlayerDeath()
     {
         timerRunning = false;
+        gameOverActive = true;
         Invoke(nameof(ShowGameOverPanel), delayBeforeGameOver);
     }
 
@@ -136,6 +153,69 @@ public class HUDManager : MonoBehaviour
     {
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
+
+        StageFlowManager.Instance?.ReturnToMainMenu();
+    }
+
+    void LateUpdate()
+    {
+        HandlePauseInput();
+    }
+
+    void HandlePauseInput()
+    {
+        bool isMainMenu = SceneManager.GetActiveScene().buildIndex == mainMenuBuildIndex;
+        if (isMainMenu || gameOverActive) return;
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (isPaused)
+                ResumeGame();
+            else
+                PauseGame();
+        }
+    }
+
+    public void PauseGame()
+    {
+        if (isPaused) return;
+        isPaused = true;
+
+        Time.timeScale = 0f;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(true);
+    }
+
+    public void ResumeGame()
+    {
+        if (!isPaused) return;
+        isPaused = false;
+
+        Time.timeScale = 1f;
+
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+    }
+
+    public void OnResumePressed()
+    {
+        ResumeGame();
+    }
+
+    public void OnPauseRetryPressed()
+    {
+        Time.timeScale = 1f;
+        ResumeGame();
+
+        int currentIndex = SceneManager.GetActiveScene().buildIndex;
+        StageFlowManager.Instance?.LoadSceneWithFade(currentIndex, null);
+    }
+
+    public void OnPauseReturnToMenuPressed()
+    {
+        Time.timeScale = 1f;
+        ResumeGame();
 
         StageFlowManager.Instance?.ReturnToMainMenu();
     }
