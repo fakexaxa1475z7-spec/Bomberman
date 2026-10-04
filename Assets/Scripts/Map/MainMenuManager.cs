@@ -13,6 +13,7 @@ public class MainMenuManager : MonoBehaviour
             return;
         }
 
+        HUDManager.Instance?.ResetScore();
         StageFlowManager.Instance.LoadSceneWithFade(1, "Stage 1");
     }
 

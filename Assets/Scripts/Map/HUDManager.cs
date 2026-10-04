@@ -7,6 +7,10 @@ public class HUDManager : MonoBehaviour
 {
     public static HUDManager Instance { get; private set; }
 
+    [Header("Canvas")]
+    [SerializeField] private Canvas mainCanvas;
+
+
     [Header("HUD")]
     [SerializeField] private TextMeshProUGUI timeText;
     [SerializeField] private TextMeshProUGUI scoreText;
@@ -20,13 +24,22 @@ public class HUDManager : MonoBehaviour
     [Header("Pause")]
     [SerializeField] private GameObject pausePanel;
 
+    [Header("Win Screen")]
+    [SerializeField] private GameObject winPanel;
+    [SerializeField] private TextMeshProUGUI finalScoreText;
+
     [Header("Scene")]
     [SerializeField] private int mainMenuBuildIndex = 0;
+    [SerializeField] private int winSceneBuildIndex = 5;
+
+    public int CurrentScore => score;
 
     private int score = 0;
     private float stageTimer = 0f;
     private bool timerRunning = false;
     private PlayerHealth trackedPlayerHealth;
+    private PlayerGridMovement trackedMovement;
+    private BombPlacer trackedBombPlacer;
 
     private bool isPaused = false;
     private bool gameOverActive = false;
@@ -48,8 +61,17 @@ public class HUDManager : MonoBehaviour
         if (pausePanel != null)
             pausePanel.SetActive(false);
 
-        bool isMainMenu = SceneManager.GetActiveScene().buildIndex == mainMenuBuildIndex;
-        SetHUDVisible(!isMainMenu);
+        int activeIndex = SceneManager.GetActiveScene().buildIndex;
+
+        if (winPanel != null)
+            winPanel.SetActive(activeIndex == winSceneBuildIndex);
+
+        SetHUDVisible(!IsNonGameplayScene(activeIndex));
+    }
+
+    bool IsNonGameplayScene(int buildIndex)
+    {
+        return buildIndex == mainMenuBuildIndex || buildIndex == winSceneBuildIndex;
     }
 
     void OnEnable()
@@ -64,7 +86,8 @@ public class HUDManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        bool isMainMenu = scene.buildIndex == mainMenuBuildIndex;
+        bool isWinScene = scene.buildIndex == winSceneBuildIndex;
+        bool isNonGameplay = IsNonGameplayScene(scene.buildIndex);
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
@@ -72,11 +95,17 @@ public class HUDManager : MonoBehaviour
         if (pausePanel != null)
             pausePanel.SetActive(false);
 
+        if (winPanel != null)
+            winPanel.SetActive(isWinScene);
+
+        if (isWinScene && finalScoreText != null)
+            finalScoreText.text = $"Final Score: {score}";
+
         isPaused = false;
         gameOverActive = false;
-        Time.timeScale = 1f; // safety net — never carry a frozen timescale into a new scene
+        Time.timeScale = 1f;
 
-        if (!isMainMenu)
+        if (!isNonGameplay)
         {
             ResetTimer();
             StartCoroutine(FindAndTrackPlayer());
@@ -85,6 +114,15 @@ public class HUDManager : MonoBehaviour
         {
             timerRunning = false;
             SetHUDVisible(false);
+        }
+
+        if (mainCanvas != null)
+        {
+            Camera sceneCamera = Camera.main;
+            if (sceneCamera != null)
+                mainCanvas.worldCamera = sceneCamera;
+            else
+                Debug.LogWarning($"HUDManager: no Camera.main found in scene '{scene.name}' to assign to Canvas.");
         }
     }
 
@@ -111,11 +149,18 @@ public class HUDManager : MonoBehaviour
         }
 
         trackedPlayerHealth = player;
+        trackedMovement = player != null ? player.GetComponent<PlayerGridMovement>() : null;
+        trackedBombPlacer = player != null ? player.GetComponent<BombPlacer>() : null;
 
         if (trackedPlayerHealth != null)
         {
             trackedPlayerHealth.OnHealthChanged += UpdateLifeText;
             trackedPlayerHealth.OnDeath += HandlePlayerDeath;
+
+            // Carry health over from the previous stage, instead of letting the new player default to full
+            if (persistedHealth >= 0)
+                trackedPlayerHealth.SetHealth(persistedHealth);
+
             UpdateLifeText(trackedPlayerHealth.CurrentHealth, trackedPlayerHealth.MaxHealth);
             timerRunning = true;
         }
@@ -154,7 +199,18 @@ public class HUDManager : MonoBehaviour
         if (gameOverPanel != null)
             gameOverPanel.SetActive(false);
 
+        if (winPanel != null)
+            winPanel.SetActive(false);
+
         StageFlowManager.Instance?.ReturnToMainMenu();
+    }
+
+    public void OnPlayAgainPressed()
+    {
+        if (winPanel != null)
+            winPanel.SetActive(false);
+
+        StageFlowManager.Instance?.LoadSceneWithFade(1, "Stage 1");
     }
 
     void LateUpdate()
@@ -164,15 +220,21 @@ public class HUDManager : MonoBehaviour
 
     void HandlePauseInput()
     {
-        bool isMainMenu = SceneManager.GetActiveScene().buildIndex == mainMenuBuildIndex;
-        if (isMainMenu || gameOverActive) return;
+        bool isNonGameplay = IsNonGameplayScene(SceneManager.GetActiveScene().buildIndex);
+        if (isNonGameplay) return;
+
+        bool isTransitioning = StageFlowManager.Instance != null && StageFlowManager.Instance.IsTransitioning;
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPaused)
+            {
                 ResumeGame();
-            else
+            }
+            else if (!gameOverActive && !isTransitioning)
+            {
                 PauseGame();
+            }
         }
     }
 
@@ -182,6 +244,8 @@ public class HUDManager : MonoBehaviour
         isPaused = true;
 
         Time.timeScale = 0f;
+
+        SetPlayerControlsEnabled(false);
 
         if (pausePanel != null)
             pausePanel.SetActive(true);
@@ -196,6 +260,20 @@ public class HUDManager : MonoBehaviour
 
         if (pausePanel != null)
             pausePanel.SetActive(false);
+
+        StartCoroutine(ReenableControlsNextFrame());
+    }
+
+    IEnumerator ReenableControlsNextFrame()
+    {
+        yield return null;
+        SetPlayerControlsEnabled(true);
+    }
+
+    void SetPlayerControlsEnabled(bool enabled)
+    {
+        if (trackedMovement != null) trackedMovement.enabled = enabled;
+        if (trackedBombPlacer != null) trackedBombPlacer.enabled = enabled;
     }
 
     public void OnResumePressed()
@@ -254,10 +332,14 @@ public class HUDManager : MonoBehaviour
         timeText.text = $"TIME {seconds:0}";
     }
 
+    private int persistedHealth = -1; // -1 = no persisted value yet, use the player's own default max health
+
     void UpdateLifeText(int current, int max)
     {
         if (lifeText == null) return;
         lifeText.text = $"LEFT {current}";
+
+        persistedHealth = current; // remember this for the next stage's player
     }
 
     public void AddScore(int amount)
@@ -269,6 +351,7 @@ public class HUDManager : MonoBehaviour
     public void ResetScore()
     {
         score = 0;
+        persistedHealth = -1; // fresh run — next spawn uses full default health
         UpdateScoreText();
     }
 
@@ -277,4 +360,5 @@ public class HUDManager : MonoBehaviour
         if (scoreText == null) return;
         scoreText.text = $"{score}";
     }
+
 }

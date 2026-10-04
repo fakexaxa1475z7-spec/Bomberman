@@ -10,6 +10,9 @@ public class StageFlowManager : MonoBehaviour
     [SerializeField] private float delayAfterLoad = 0.5f;
     [SerializeField] private FadeController fadeController;
     [SerializeField] private int mainMenuBuildIndex = 0;
+    [SerializeField] private int winSceneBuildIndex = 5;
+
+    public bool IsTransitioning { get; private set; } = false;
 
     private bool pendingFadeIn = false;
 
@@ -40,7 +43,9 @@ public class StageFlowManager : MonoBehaviour
     {
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
         int nextIndex = currentIndex + 1;
-        LoadSceneWithFade(nextIndex, $"Stage {nextIndex}");
+
+        string label = (nextIndex == winSceneBuildIndex) ? "COMPLETE" : $"Stage {nextIndex}";
+        LoadSceneWithFade(nextIndex, label);
     }
 
     public void ReturnToMainMenu()
@@ -61,6 +66,8 @@ public class StageFlowManager : MonoBehaviour
             Debug.LogWarning($"StageFlowManager: scene index {sceneIndex} out of range.");
             yield break;
         }
+
+        IsTransitioning = true;
 
         HUDManager.Instance?.HideHUD();
 
@@ -97,26 +104,46 @@ public class StageFlowManager : MonoBehaviour
             pendingFadeIn = false;
             StartCoroutine(FadeInAfterLoad(scene.buildIndex));
         }
+        else
+        {
+            IsTransitioning = false;
+        }
     }
 
     IEnumerator SubscribeWhenReady()
     {
-        yield return new WaitUntil(() => StageManager.Instance != null);
-        StageManager.Instance.OnStageComplete += HandleStageComplete;
+        // Win scene and Main Menu have no StageManager — wait briefly, then give up quietly
+        float timeout = 2f;
+        float elapsed = 0f;
+
+        while (StageManager.Instance == null && elapsed < timeout)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        if (StageManager.Instance != null)
+            StageManager.Instance.OnStageComplete += HandleStageComplete;
     }
 
     IEnumerator FadeInAfterLoad(int loadedSceneIndex)
     {
-        if (fadeController == null) yield break;
+        if (fadeController == null)
+        {
+            IsTransitioning = false;
+            yield break;
+        }
 
         yield return null;
-        yield return new WaitForSecondsRealtime(delayAfterLoad); // immune to pause
+        yield return new WaitForSecondsRealtime(delayAfterLoad);
         yield return fadeController.FadeIn();
 
-        bool isMainMenu = loadedSceneIndex == mainMenuBuildIndex;
-        if (!isMainMenu)
+        bool isGameplayScene = loadedSceneIndex != mainMenuBuildIndex && loadedSceneIndex != winSceneBuildIndex;
+        if (isGameplayScene)
             HUDManager.Instance?.ShowHUD();
         else
             HUDManager.Instance?.HideHUD();
+
+        IsTransitioning = false;
     }
 }
