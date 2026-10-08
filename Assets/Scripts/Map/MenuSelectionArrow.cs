@@ -45,4 +45,9 @@ public class MenuSelectionArrow : MonoBehaviour
             targetPos.z
         );
     }
+
+    public void onAwake()
+    {
+        Awake();
+    }
 }

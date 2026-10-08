@@ -7,10 +7,6 @@ public class HUDManager : MonoBehaviour
 {
     public static HUDManager Instance { get; private set; }
 
-    [Header("Canvas")]
-    [SerializeField] private Canvas mainCanvas;
-
-
     [Header("HUD")]
     [SerializeField] private TextMeshProUGUI timeText;
     [SerializeField] private TextMeshProUGUI scoreText;
@@ -27,6 +23,11 @@ public class HUDManager : MonoBehaviour
     [Header("Win Screen")]
     [SerializeField] private GameObject winPanel;
     [SerializeField] private TextMeshProUGUI finalScoreText;
+    [SerializeField] private Canvas winCanvas;
+
+    [Header("Save Code")]
+    [SerializeField] private GameObject saveCodePanel;
+    [SerializeField] private TextMeshProUGUI saveCodeText;
 
     [Header("Scene")]
     [SerializeField] private int mainMenuBuildIndex = 0;
@@ -44,6 +45,17 @@ public class HUDManager : MonoBehaviour
     private bool isPaused = false;
     private bool gameOverActive = false;
 
+    private int persistedHealth = -1;
+    private bool hasPendingSpawnPos = false;
+    private Vector2Int pendingSpawnPos;
+    private float pendingTimeSeconds = -1f;
+
+    // Saved map waiting to be applied by GridManager when the stage loads
+    private SaveSlotData pendingGridData;
+    public bool HasPendingGridData => pendingGridData != null;
+    public SaveSlotData PeekPendingGridData() => pendingGridData;
+    public void ClearPendingGridData() => pendingGridData = null;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -55,11 +67,9 @@ public class HUDManager : MonoBehaviour
         Instance = this;
         UpdateScoreText();
 
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(false);
-
-        if (pausePanel != null)
-            pausePanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(false);
+        if (saveCodePanel != null) saveCodePanel.SetActive(false);
 
         int activeIndex = SceneManager.GetActiveScene().buildIndex;
 
@@ -89,17 +99,22 @@ public class HUDManager : MonoBehaviour
         bool isWinScene = scene.buildIndex == winSceneBuildIndex;
         bool isNonGameplay = IsNonGameplayScene(scene.buildIndex);
 
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(false);
-
-        if (pausePanel != null)
-            pausePanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(false);
+        if (saveCodePanel != null) saveCodePanel.SetActive(false);
 
         if (winPanel != null)
             winPanel.SetActive(isWinScene);
 
         if (isWinScene && finalScoreText != null)
             finalScoreText.text = $"Final Score: {score}";
+
+        if (isWinScene && winCanvas != null)
+        {
+            Camera sceneCamera = Camera.main;
+            if (sceneCamera != null)
+                winCanvas.worldCamera = sceneCamera;
+        }
 
         isPaused = false;
         gameOverActive = false;
@@ -114,15 +129,6 @@ public class HUDManager : MonoBehaviour
         {
             timerRunning = false;
             SetHUDVisible(false);
-        }
-
-        if (mainCanvas != null)
-        {
-            Camera sceneCamera = Camera.main;
-            if (sceneCamera != null)
-                mainCanvas.worldCamera = sceneCamera;
-            else
-                Debug.LogWarning($"HUDManager: no Camera.main found in scene '{scene.name}' to assign to Canvas.");
         }
     }
 
@@ -157,16 +163,29 @@ public class HUDManager : MonoBehaviour
             trackedPlayerHealth.OnHealthChanged += UpdateLifeText;
             trackedPlayerHealth.OnDeath += HandlePlayerDeath;
 
-            // Carry health over from the previous stage, instead of letting the new player default to full
             if (persistedHealth >= 0)
                 trackedPlayerHealth.SetHealth(persistedHealth);
 
+            if (hasPendingSpawnPos && trackedMovement != null)
+            {
+                hasPendingSpawnPos = false;
+
+                Vector2Int target = pendingSpawnPos;
+                if (!GridManager.Instance.IsWalkable(target))
+                    target = GridManager.Instance.SpawnPoints[0]; // saved tile is blocked, use the spawn corner
+
+                trackedMovement.transform.position = GridManager.Instance.GridToWorld(target);
+            }
+
+            if (pendingTimeSeconds >= 0f)
+            {
+                stageTimer = pendingTimeSeconds;
+                pendingTimeSeconds = -1f;
+                UpdateTimeText();
+            }
+
             UpdateLifeText(trackedPlayerHealth.CurrentHealth, trackedPlayerHealth.MaxHealth);
             timerRunning = true;
-        }
-        else
-        {
-            Debug.LogWarning("HUDManager: no PlayerHealth found in scene within timeout.");
         }
     }
 
@@ -180,15 +199,15 @@ public class HUDManager : MonoBehaviour
     void ShowGameOverPanel()
     {
         SetHUDVisible(false);
-
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(true);
+        if (gameOverPanel != null) gameOverPanel.SetActive(true);
     }
 
     public void OnRetryPressed()
     {
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        persistedHealth = -1;
+        pendingTimeSeconds = -1f;
+        pendingGridData = null;
 
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
         StageFlowManager.Instance?.LoadSceneWithFade(currentIndex, null);
@@ -196,19 +215,18 @@ public class HUDManager : MonoBehaviour
 
     public void OnReturnToMenuPressed()
     {
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(false);
-
-        if (winPanel != null)
-            winPanel.SetActive(false);
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (winPanel != null) winPanel.SetActive(false);
 
         StageFlowManager.Instance?.ReturnToMainMenu();
     }
 
     public void OnPlayAgainPressed()
     {
-        if (winPanel != null)
-            winPanel.SetActive(false);
+        if (winPanel != null) winPanel.SetActive(false);
+        persistedHealth = -1;
+        pendingTimeSeconds = -1f;
+        pendingGridData = null;
 
         StageFlowManager.Instance?.LoadSceneWithFade(1, "Stage 1");
     }
@@ -228,13 +246,9 @@ public class HUDManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPaused)
-            {
                 ResumeGame();
-            }
             else if (!gameOverActive && !isTransitioning)
-            {
                 PauseGame();
-            }
         }
     }
 
@@ -244,11 +258,9 @@ public class HUDManager : MonoBehaviour
         isPaused = true;
 
         Time.timeScale = 0f;
-
         SetPlayerControlsEnabled(false);
 
-        if (pausePanel != null)
-            pausePanel.SetActive(true);
+        if (pausePanel != null) pausePanel.SetActive(true);
     }
 
     public void ResumeGame()
@@ -258,8 +270,8 @@ public class HUDManager : MonoBehaviour
 
         Time.timeScale = 1f;
 
-        if (pausePanel != null)
-            pausePanel.SetActive(false);
+        if (pausePanel != null) pausePanel.SetActive(false);
+        if (saveCodePanel != null) saveCodePanel.SetActive(false);
 
         StartCoroutine(ReenableControlsNextFrame());
     }
@@ -276,15 +288,15 @@ public class HUDManager : MonoBehaviour
         if (trackedBombPlacer != null) trackedBombPlacer.enabled = enabled;
     }
 
-    public void OnResumePressed()
-    {
-        ResumeGame();
-    }
+    public void OnResumePressed() => ResumeGame();
 
     public void OnPauseRetryPressed()
     {
         Time.timeScale = 1f;
         ResumeGame();
+        persistedHealth = -1;
+        pendingTimeSeconds = -1f;
+        pendingGridData = null;
 
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
         StageFlowManager.Instance?.LoadSceneWithFade(currentIndex, null);
@@ -298,6 +310,88 @@ public class HUDManager : MonoBehaviour
         StageFlowManager.Instance?.ReturnToMainMenu();
     }
 
+    // ---------- Save / Load ----------
+
+    public void OnSavePressed()
+    {
+        if (trackedPlayerHealth == null || trackedMovement == null || GridManager.Instance == null)
+        {
+            Debug.LogWarning("HUDManager: cannot save, player or grid not currently tracked.");
+            return;
+        }
+
+        var exitPos = GridManager.Instance.ExitTilePos;
+
+        var data = new SaveSlotData
+        {
+            stageIndex = SceneManager.GetActiveScene().buildIndex,
+            health = trackedPlayerHealth.CurrentHealth,
+            score = score,
+            gridX = trackedMovement.CurrentGridPos.x,
+            gridY = trackedMovement.CurrentGridPos.y,
+            timeSeconds = stageTimer,
+            blockGrid = GridManager.Instance.GetBlockGridString(),
+            hasExit = exitPos.HasValue,
+            exitX = exitPos?.x ?? 0,
+            exitY = exitPos?.y ?? 0
+        };
+
+        string code = SaveSystem.GenerateUniqueCode();
+        SaveSystem.Save(code, data);
+
+        if (saveCodeText != null)
+            saveCodeText.text = code;
+
+        if (saveCodePanel != null)
+            saveCodePanel.SetActive(true);
+    }
+
+    public void OnCopyCodePressed()
+    {
+        if (saveCodeText != null)
+            GUIUtility.systemCopyBuffer = saveCodeText.text;
+    }
+
+    public void OnCloseSaveCodePressed()
+    {
+        if (saveCodePanel != null)
+            saveCodePanel.SetActive(false);
+    }
+
+    public bool TryContinueFromCode(string code, out string errorMessage)
+    {
+        errorMessage = null;
+
+        if (!SaveSystem.TryLoad(code, out var data))
+        {
+            errorMessage = "Save not found.";
+            return false;
+        }
+
+        if (data.stageIndex <= mainMenuBuildIndex ||
+            data.stageIndex >= SceneManager.sceneCountInBuildSettings ||
+            data.stageIndex == winSceneBuildIndex)
+        {
+            errorMessage = "Invalid save.";
+            return false;
+        }
+
+        persistedHealth = data.health;
+        score = data.score;
+        UpdateScoreText();
+
+        hasPendingSpawnPos = true;
+        pendingSpawnPos = new Vector2Int(data.gridX, data.gridY);
+
+        pendingTimeSeconds = data.timeSeconds;
+        pendingGridData = data;
+
+        StageFlowManager.Instance?.LoadSceneWithFade(data.stageIndex, $"Stage {data.stageIndex}");
+        return true;
+    }
+
+    // ---------- HUD visibility ----------
+
     void SetHUDVisible(bool visible)
     {
         if (hudCanvasGroup == null) return;
@@ -308,12 +402,14 @@ public class HUDManager : MonoBehaviour
     public void ShowHUD() => SetHUDVisible(true);
     public void HideHUD() => SetHUDVisible(false);
 
+    // ---------- Timer / Score / Life text ----------
+
     void Update()
     {
         if (!timerRunning) return;
 
         stageTimer += Time.deltaTime;
-        //UpdateTimeText();
+        UpdateTimeText();
     }
 
     void ResetTimer()
@@ -332,14 +428,12 @@ public class HUDManager : MonoBehaviour
         timeText.text = $"TIME {seconds:0}";
     }
 
-    private int persistedHealth = -1; // -1 = no persisted value yet, use the player's own default max health
-
     void UpdateLifeText(int current, int max)
     {
         if (lifeText == null) return;
         lifeText.text = $"LEFT {current}";
 
-        persistedHealth = current; // remember this for the next stage's player
+        persistedHealth = current;
     }
 
     public void AddScore(int amount)
@@ -351,7 +445,9 @@ public class HUDManager : MonoBehaviour
     public void ResetScore()
     {
         score = 0;
-        persistedHealth = -1; // fresh run — next spawn uses full default health
+        persistedHealth = -1;
+        pendingTimeSeconds = -1f;
+        pendingGridData = null;
         UpdateScoreText();
     }
 
@@ -360,5 +456,4 @@ public class HUDManager : MonoBehaviour
         if (scoreText == null) return;
         scoreText.text = $"{score}";
     }
-
 }

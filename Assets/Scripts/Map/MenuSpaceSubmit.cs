@@ -5,16 +5,16 @@ public class MenuSpaceSubmit : MonoBehaviour
 {
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            GameObject selected = EventSystem.current.currentSelectedGameObject;
-            if (selected == null) return;
+        if (!Input.GetKeyDown(KeyCode.Space)) return;
+        if (EventSystem.current == null) return;
 
-            ExecuteEvents.Execute(
-                selected,
-                new BaseEventData(EventSystem.current),
-                ExecuteEvents.submitHandler
-            );
-        }
+        GameObject selected = EventSystem.current.currentSelectedGameObject;
+        if (selected == null) return;
+
+        ExecuteEvents.Execute(
+            selected,
+            new BaseEventData(EventSystem.current),
+            ExecuteEvents.submitHandler
+        );
     }
 }

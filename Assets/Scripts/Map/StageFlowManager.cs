@@ -44,7 +44,7 @@ public class StageFlowManager : MonoBehaviour
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
         int nextIndex = currentIndex + 1;
 
-        string label = (nextIndex == winSceneBuildIndex) ? "COMPLETE" : $"Stage {nextIndex}";
+        string label = (nextIndex == winSceneBuildIndex) ? "Complete!" : $"Stage {nextIndex}";
         LoadSceneWithFade(nextIndex, label);
     }
 
@@ -56,6 +56,12 @@ public class StageFlowManager : MonoBehaviour
 
     public void LoadSceneWithFade(int sceneIndex, string label)
     {
+        if (IsTransitioning)
+        {
+            Debug.LogWarning($"StageFlowManager: ignoring LoadSceneWithFade({sceneIndex}), a transition is already running.");
+            return;
+        }
+
         StartCoroutine(TransitionRoutine(sceneIndex, label));
     }
 
@@ -112,7 +118,7 @@ public class StageFlowManager : MonoBehaviour
 
     IEnumerator SubscribeWhenReady()
     {
-        // Win scene and Main Menu have no StageManager — wait briefly, then give up quietly
+        // Main Menu and Win scenes have no StageManager: wait briefly, then give up quietly
         float timeout = 2f;
         float elapsed = 0f;
 
