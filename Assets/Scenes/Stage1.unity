@@ -10134,7 +10134,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridManager
   debugShowExitBlock: 1
-  debugExitColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  debugExitColor: {r: 0.8001013, g: 0, b: 1, a: 1}
   debugLogLayout: 1
   width: 31
   height: 13
@@ -10147,6 +10147,9 @@ MonoBehaviour:
   - {fileID: 5453299534465241181, guid: be14a79bc1ccf48409c5c692eadcb49b, type: 3}
   - {fileID: 5453299534465241181, guid: bfe86dbb7c40f7540921f86b9d53f7c1, type: 3}
   - {fileID: 5453299534465241181, guid: 8b93128f1537d52489f2babd91fa503b, type: 3}
+  - {fileID: 5453299534465241181, guid: 6244abc0e3f2532428be7c2cdd91f5ca, type: 3}
+  - {fileID: 5453299534465241181, guid: a3e7f5bebf645dd40a8d25281a247026, type: 3}
+  - {fileID: 5453299534465241181, guid: 98ff13071723c4648bd6b8d919dd828f, type: 3}
   blockPrefabs:
   - {fileID: 4617447207701625058, guid: eb2f11463d1dc7449b5907c0602faed0, type: 3}
   - {fileID: 4617447207701625058, guid: c905270827ff46949bd43d59c60952e7, type: 3}
