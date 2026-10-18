@@ -193,13 +193,23 @@ public class HUDManager : MonoBehaviour
     {
         timerRunning = false;
         gameOverActive = true;
-        Invoke(nameof(ShowGameOverPanel), delayBeforeGameOver);
+
+        AudioManager.Instance?.PlayPlayerDied();
+
+        // Wait at least as long as the died sound, so the game over music doesn't cut it off
+        float wait = delayBeforeGameOver;
+        if (AudioManager.Instance != null)
+            wait = Mathf.Max(wait, AudioManager.Instance.PlayerDiedLength);
+
+        Invoke(nameof(ShowGameOverPanel), wait);
     }
 
     void ShowGameOverPanel()
     {
         SetHUDVisible(false);
         if (gameOverPanel != null) gameOverPanel.SetActive(true);
+
+        AudioManager.Instance?.PlayGameOver();
     }
 
     public void OnRetryPressed()
@@ -261,6 +271,7 @@ public class HUDManager : MonoBehaviour
         SetPlayerControlsEnabled(false);
 
         if (pausePanel != null) pausePanel.SetActive(true);
+        AudioManager.Instance?.SetDucked(true);
     }
 
     public void ResumeGame()
@@ -274,6 +285,7 @@ public class HUDManager : MonoBehaviour
         if (saveCodePanel != null) saveCodePanel.SetActive(false);
 
         StartCoroutine(ReenableControlsNextFrame());
+        AudioManager.Instance?.SetDucked(false);
     }
 
     IEnumerator ReenableControlsNextFrame()
