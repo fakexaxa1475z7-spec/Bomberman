@@ -1,36 +1,53 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
+
+[System.Serializable]
+public class EnemySpawnEntry
+{
+    public string label = "Enemy";
+    public GameObject prefab;
+    [Min(0)] public int count = 1;
+}
 
 public class EnemySpawner : MonoBehaviour
 {
-    [Header("Enemy Prefabs")]
-    [SerializeField] private GameObject normalEnemyPrefab;
-    [SerializeField] private GameObject fastEnemyPrefab;
+    [Header("Enemies at stage start")]
+    [SerializeField] private EnemySpawnEntry[] enemies;
 
-    [Header("Spawn Counts")]
-    [SerializeField] private int normalEnemyCount = 4;
-    [SerializeField] private int fastEnemyCount = 2;
+    [Header("Time Out enemy (type 8)")]
+    [SerializeField] private GameObject timeOutEnemyPrefab;
+    [SerializeField] private int timeOutEnemyCount = 1;
+    [SerializeField] private int timeOutMinDistanceFromPlayer = 8;
 
     [Header("Spawn Rules")]
     [SerializeField] private int minDistanceFromPlayerSpawns = 4;
     [SerializeField] private int minDistanceBetweenEnemies = 2;
-    [SerializeField] private int minOpenAreaSize = 4; // candidate tile must have at least this many connected walkable tiles nearby
+    [SerializeField] private int minOpenAreaSize = 4;
 
-    private List<Vector2Int> usedPositions = new List<Vector2Int>();
+    private readonly List<Vector2Int> usedPositions = new List<Vector2Int>();
+    private bool timeOutSpawned = false;
 
     void Start()
     {
-        SpawnEnemies(normalEnemyPrefab, normalEnemyCount);
-        SpawnEnemies(fastEnemyPrefab, fastEnemyCount);
+        if (enemies != null)
+            foreach (var entry in enemies)
+                SpawnEnemies(entry.prefab, entry.count);
+
+        if (HUDManager.Instance != null)
+            HUDManager.Instance.OnTimeOut += HandleTimeOut;
     }
+
+    void OnDestroy()
+    {
+        if (HUDManager.Instance != null)
+            HUDManager.Instance.OnTimeOut -= HandleTimeOut;
+    }
+
+    // ---------------- Stage start ----------------
 
     void SpawnEnemies(GameObject prefab, int count)
     {
-        if (prefab == null)
-        {
-            Debug.LogWarning("EnemySpawner: prefab not assigned, skipping.");
-            return;
-        }
+        if (prefab == null || count <= 0) return;
 
         for (int i = 0; i < count; i++)
         {
@@ -38,13 +55,11 @@ public class EnemySpawner : MonoBehaviour
 
             if (!spawnPos.HasValue)
             {
-                Debug.LogWarning($"EnemySpawner: couldn't find valid spawn position for {prefab.name} (arena too crowded?).");
+                Debug.LogWarning($"EnemySpawner: couldn't find a valid spawn position for {prefab.name} (arena too crowded?).");
                 continue;
             }
 
-            Vector3 worldPos = GridManager.Instance.GridToWorld(spawnPos.Value);
-            Instantiate(prefab, worldPos, Quaternion.identity);
-
+            Instantiate(prefab, GridManager.Instance.GridToWorld(spawnPos.Value), Quaternion.identity);
             usedPositions.Add(spawnPos.Value);
         }
     }
@@ -52,23 +67,13 @@ public class EnemySpawner : MonoBehaviour
     Vector2Int? FindValidSpawnPosition()
     {
         List<Vector2Int> candidates = GridManager.Instance.GetAllWalkableTiles();
-
-        for (int i = candidates.Count - 1; i > 0; i--)
-        {
-            int j = Random.Range(0, i + 1);
-            (candidates[i], candidates[j]) = (candidates[j], candidates[i]);
-        }
+        Shuffle(candidates);
 
         foreach (var candidate in candidates)
         {
-            if (GridManager.Instance.IsNearSpawnPoint(candidate, minDistanceFromPlayerSpawns))
-                continue;
-
-            if (IsTooCloseToUsedPosition(candidate))
-                continue;
-
-            if (!HasMinimumOpenArea(candidate, minOpenAreaSize))
-                continue;
+            if (GridManager.Instance.IsNearSpawnPoint(candidate, minDistanceFromPlayerSpawns)) continue;
+            if (IsTooCloseToUsedPosition(candidate)) continue;
+            if (!HasMinimumOpenArea(candidate, minOpenAreaSize)) continue;
 
             return candidate;
         }
@@ -81,26 +86,22 @@ public class EnemySpawner : MonoBehaviour
         foreach (var used in usedPositions)
         {
             int dist = Mathf.Abs(candidate.x - used.x) + Mathf.Abs(candidate.y - used.y);
-            if (dist < minDistanceBetweenEnemies)
-                return true;
+            if (dist < minDistanceBetweenEnemies) return true;
         }
         return false;
     }
 
-    // BFS flood fill — counts connected walkable tiles reachable from 'start',
-    // stopping early once it confirms at least 'minSize' tiles (cheap, no need to fully explore large open areas)
     bool HasMinimumOpenArea(Vector2Int start, int minSize)
     {
-        HashSet<Vector2Int> visited = new HashSet<Vector2Int> { start };
-        Queue<Vector2Int> frontier = new Queue<Vector2Int>();
+        var visited = new HashSet<Vector2Int> { start };
+        var frontier = new Queue<Vector2Int>();
         frontier.Enqueue(start);
 
         Vector2Int[] dirs = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
         while (frontier.Count > 0)
         {
-            if (visited.Count >= minSize)
-                return true;
+            if (visited.Count >= minSize) return true;
 
             Vector2Int current = frontier.Dequeue();
 
@@ -108,11 +109,8 @@ public class EnemySpawner : MonoBehaviour
             {
                 Vector2Int neighbor = current + dir;
 
-                if (visited.Contains(neighbor))
-                    continue;
-
-                if (!GridManager.Instance.IsWalkable(neighbor))
-                    continue;
+                if (visited.Contains(neighbor)) continue;
+                if (!GridManager.Instance.IsWalkable(neighbor)) continue;
 
                 visited.Add(neighbor);
                 frontier.Enqueue(neighbor);
@@ -120,5 +118,72 @@ public class EnemySpawner : MonoBehaviour
         }
 
         return visited.Count >= minSize;
+    }
+
+    // ---------------- Time Out ----------------
+
+    void HandleTimeOut()
+    {
+        if (timeOutSpawned) return;
+        timeOutSpawned = true;
+
+        if (timeOutEnemyPrefab == null)
+        {
+            Debug.LogWarning("EnemySpawner: time ran out but no Time Out Enemy Prefab is assigned.");
+            return;
+        }
+
+        for (int i = 0; i < timeOutEnemyCount; i++)
+        {
+            Vector2Int? pos = FindTimeOutPosition();
+            if (!pos.HasValue) continue;
+
+            Instantiate(timeOutEnemyPrefab, GridManager.Instance.GridToWorld(pos.Value), Quaternion.identity);
+        }
+    }
+
+    Vector2Int? FindTimeOutPosition()
+    {
+        List<Vector2Int> candidates = GridManager.Instance.GetAllWalkableTiles();
+        if (candidates.Count == 0) return null;
+
+        Shuffle(candidates);
+
+        var players = FindObjectsByType<PlayerGridMovement>(FindObjectsSortMode.None);
+
+        Vector2Int best = candidates[0];
+        int bestDistance = -1;
+
+        foreach (var candidate in candidates)
+        {
+            int nearest = int.MaxValue;
+            foreach (var player in players)
+            {
+                Vector2Int p = player.CurrentGridPos;
+                nearest = Mathf.Min(nearest, Mathf.Abs(candidate.x - p.x) + Mathf.Abs(candidate.y - p.y));
+            }
+
+            if (players.Length == 0) nearest = int.MaxValue;
+
+            if (nearest >= timeOutMinDistanceFromPlayer)
+                return candidate; // random tile that is far enough away
+
+            if (nearest > bestDistance)
+            {
+                bestDistance = nearest;
+                best = candidate;
+            }
+        }
+
+        return best; // nothing far enough: use the farthest one we found
+    }
+
+    void Shuffle(List<Vector2Int> list)
+    {
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            (list[i], list[j]) = (list[j], list[i]);
+        }
     }
 }

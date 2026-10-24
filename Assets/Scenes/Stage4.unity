@@ -676,6 +676,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GridManager
   debugShowExitBlock: 1
   debugExitColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  debugLogLayout: 0
   width: 31
   height: 13
   tileSize: 1
@@ -693,8 +694,9 @@ MonoBehaviour:
   - {fileID: 4617447207701625058, guid: e1ed9f014495ff347bacc7f20092f317, type: 3}
   blockDensity: 0.4
   spawnClearRadius: 2
-  exitItemPrefab: {fileID: 0}
   exitZoneWidthFraction: 0.25
+  itemDrops: []
+  dropChance: 0.2
 --- !u!4 &1540684752
 Transform:
   m_ObjectHideFlags: 0
@@ -737,10 +739,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b49e2ccba9b79646bef745f257e7fc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  normalEnemyPrefab: {fileID: 3835284016031400613, guid: 40f42a19006677a4b87bd28ce7f283a4, type: 3}
-  fastEnemyPrefab: {fileID: 3835284016031400613, guid: af3cc94238760394caa2437f00b9df11, type: 3}
-  normalEnemyCount: 2
-  fastEnemyCount: 1
+  enemies:
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: d7bb447f0b946e04e8cc493791d77f43, type: 3}
+    count: 2
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: 82bede5a4183701478423365c1cab6c4, type: 3}
+    count: 2
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: 221897933bab9c24b86e8e329550a936, type: 3}
+    count: 2
+  timeOutEnemyPrefab: {fileID: 3835284016031400613, guid: b1578f4436142964693889a5b24159b7, type: 3}
+  timeOutEnemyCount: 1
+  timeOutMinDistanceFromPlayer: 8
   minDistanceFromPlayerSpawns: 6
   minDistanceBetweenEnemies: 2
   minOpenAreaSize: 4

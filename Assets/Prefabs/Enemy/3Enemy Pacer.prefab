@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5346306867663220849}
   - component: {fileID: -1629606606243767418}
   m_Layer: 0
-  m_Name: Enemy Fast
+  m_Name: 3Enemy Pacer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -129,6 +129,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 1
+  hitCooldown: 0.6
+  scoreValue: 400
 --- !u!114 &5346306867663220849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -154,9 +156,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 729d082b2c5ad7e42a1b372ff63d486a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
-  enemyType: 1
-  normalSpeed: 1
-  fastSpeed: 2
+  enemyType: 2
+  useCustomStats: 0
+  customStats:
+    speed: 0
+    pacing: 0
+    paceMinSpeed: 0
+    paceMaxSpeed: 0
+    pacePeriod: 0
+    passBlocks: 0
+    passWalls: 0
+    directionalBias: 0
+    erraticChance: 0
+    chase: 0
+    chaseRange: 0
+    loseRange: 0
+    dodgeBombs: 0
 --- !u!1001 &2512872802837731805
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -228,6 +243,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 83f7365a5d0efce49961faca070fc8b7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 458883319183514236}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 83f7365a5d0efce49961faca070fc8b7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7784502772385925782}
   m_SourcePrefab: {fileID: 100100000, guid: 83f7365a5d0efce49961faca070fc8b7, type: 3}
 --- !u!4 &2690124510943739446 stripped
 Transform:
@@ -261,3 +279,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7784502772385925782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3323354511471223948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d283ad80531fea4d8622cab4968df1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FaceCamera
+  directionSource: {fileID: 0}
+  worldOffset: {x: 0, y: 0.5, z: -0.5}
+  turnWithMovement: 1

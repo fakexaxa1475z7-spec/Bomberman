@@ -179,6 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8e4cf0e0dc5efb42a944eca866254bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  startingHealth: 2
   maxHealth: 1000
   invincibilityDuration: 1.5
 --- !u!1001 &2007985942948452674
@@ -191,15 +192,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
       propertyPath: m_LocalScale.x
-      value: 12
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
       propertyPath: m_LocalScale.y
-      value: 12
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
       propertyPath: m_LocalScale.z
-      value: 12
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -219,15 +220,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -252,6 +253,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4365206639912613136}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7489704861838018137}
   m_SourcePrefab: {fileID: 100100000, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
 --- !u!1 &1665387666975663123 stripped
 GameObject:
@@ -280,6 +284,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7489704861838018137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665387666975663123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d283ad80531fea4d8622cab4968df1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FaceCamera
+  directionSource: {fileID: 0}
+  worldOffset: {x: 0, y: 0.5, z: -0.5}
+  turnWithMovement: 1
 --- !u!4 &2042230625222983337 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}

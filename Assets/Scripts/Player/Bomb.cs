@@ -36,6 +36,12 @@ public class Bomb : MonoBehaviour
     private Vector3 baseScale;
     private MaterialPropertyBlock propBlock;
 
+    public static readonly List<Bomb> Active = new List<Bomb>();
+    public bool HasExploded => hasExploded;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    static void ResetStatics() { Active.Clear(); }
+
     void Awake()
     {
         baseScale = transform.localScale;
@@ -50,6 +56,7 @@ public class Bomb : MonoBehaviour
 
     public void Initialize(Vector2Int position, int radius, BombPlacer bombOwner)
     {
+        Active.Add(this);
         gridPos = position;
         blastRadius = radius;
         owner = bombOwner;
@@ -180,7 +187,32 @@ public class Bomb : MonoBehaviour
 
     void OnDestroy()
     {
+        Active.Remove(this);
         if (!hasExploded && GridManager.Instance != null)
             GridManager.Instance.ClearTile(gridPos);
+    }
+    public List<Vector2Int> PredictBlastTiles()
+    {
+        var tiles = new List<Vector2Int> { gridPos };
+        Vector2Int[] dirs = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+
+        foreach (var dir in dirs)
+        {
+            for (int step = 1; step <= blastRadius; step++)
+            {
+                Vector2Int p = gridPos + dir * step;
+
+                if (p.x < 0 || p.x >= GridManager.Instance.Width || p.y < 0 || p.y >= GridManager.Instance.Height)
+                    break;
+
+                TileType t = GridManager.Instance.GetTile(p);
+                if (t == TileType.Wall) break;
+
+                tiles.Add(p);
+                if (t == TileType.Block || t == TileType.Bomb) break;
+            }
+        }
+
+        return tiles;
     }
 }

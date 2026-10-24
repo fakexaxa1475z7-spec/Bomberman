@@ -4303,7 +4303,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &546415594
 Transform:
   m_ObjectHideFlags: 0
@@ -7764,7 +7764,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1244873950
 Transform:
   m_ObjectHideFlags: 0
@@ -10201,10 +10201,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b49e2ccba9b79646bef745f257e7fc1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  normalEnemyPrefab: {fileID: 3835284016031400613, guid: 40f42a19006677a4b87bd28ce7f283a4, type: 3}
-  fastEnemyPrefab: {fileID: 3835284016031400613, guid: af3cc94238760394caa2437f00b9df11, type: 3}
-  normalEnemyCount: 2
-  fastEnemyCount: 1
+  enemies:
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: 40f42a19006677a4b87bd28ce7f283a4, type: 3}
+    count: 2
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: af3cc94238760394caa2437f00b9df11, type: 3}
+    count: 1
+  timeOutEnemyPrefab: {fileID: 3835284016031400613, guid: b1578f4436142964693889a5b24159b7, type: 3}
+  timeOutEnemyCount: 1
+  timeOutMinDistanceFromPlayer: 8
   minDistanceFromPlayerSpawns: 6
   minDistanceBetweenEnemies: 2
   minOpenAreaSize: 4
@@ -12384,7 +12390,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1916701702
 Transform:
   m_ObjectHideFlags: 0

@@ -2,10 +2,13 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour, IDamageable
 {
-    [SerializeField] private int maxHealth = 1; // 1 = dies in one bomb hit, classic Bomberman enemy behavior
+    [SerializeField] private int maxHealth = 1;
+    [SerializeField] private float hitCooldown = 0.6f; // longer than one explosion, so a blast counts once
+    [SerializeField] private int scoreValue = 100;
 
     private int currentHealth;
     private bool isDead = false;
+    private float nextHitTime = 0f;
 
     void Awake()
     {
@@ -15,8 +18,11 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     public void TakeDamage(int amount)
     {
         if (isDead) return;
+        if (Time.time < nextHitTime) return;
 
+        nextHitTime = Time.time + hitCooldown;
         currentHealth -= amount;
+
         if (currentHealth <= 0)
             Die();
     }
@@ -26,7 +32,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         if (isDead) return;
         isDead = true;
 
-        // Placeholder — swap for death animation/VFX/score increment later
+        HUDManager.Instance?.AddScore(scoreValue);
         Destroy(gameObject);
     }
 }

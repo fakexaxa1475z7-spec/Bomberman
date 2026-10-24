@@ -33,6 +33,11 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private int mainMenuBuildIndex = 0;
     [SerializeField] private int winSceneBuildIndex = 5;
 
+    [Header("Time Limit")]
+    [SerializeField] private float stageTimeLimit = 200f; // seconds, 0 = no limit
+    public event System.Action OnTimeOut;
+    private bool timeOutFired = false;
+
     public int CurrentScore => score;
 
     private int score = 0;
@@ -422,12 +427,19 @@ public class HUDManager : MonoBehaviour
 
         stageTimer += Time.deltaTime;
         UpdateTimeText();
+
+        if (!timeOutFired && stageTimeLimit > 0f && stageTimer >= stageTimeLimit)
+        {
+            timeOutFired = true;
+            OnTimeOut?.Invoke();
+        }
     }
 
     void ResetTimer()
     {
         stageTimer = 0f;
         timerRunning = false;
+        timeOutFired = false;
         UpdateTimeText();
     }
 
@@ -435,9 +447,12 @@ public class HUDManager : MonoBehaviour
     {
         if (timeText == null) return;
 
-        int minutes = Mathf.FloorToInt(stageTimer / 60f);
-        int seconds = Mathf.FloorToInt(stageTimer % 60f);
-        timeText.text = $"TIME {seconds:0}";
+        // Counts DOWN when there's a time limit, up otherwise
+        int shown = stageTimeLimit > 0f
+            ? Mathf.CeilToInt(Mathf.Max(0f, stageTimeLimit - stageTimer))
+            : Mathf.FloorToInt(stageTimer);
+
+        timeText.text = $"TIME {shown}";
     }
 
     void UpdateLifeText(int current, int max)

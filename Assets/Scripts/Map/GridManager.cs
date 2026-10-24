@@ -357,6 +357,24 @@ public class GridManager : MonoBehaviour
         return type == TileType.Empty || type == TileType.Powerup || type == TileType.Exit;
     }
 
+    public bool CanEnemyEnter(Vector2Int pos, bool passBlocks, bool passWalls)
+    {
+        if (pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height) return false;
+
+        TileType type = grid[pos.x, pos.y];
+
+        if (type == TileType.Wall)
+        {
+            bool isBorder = pos.x == 0 || pos.y == 0 || pos.x == width - 1 || pos.y == height - 1;
+            return passWalls && !isBorder; // the outer border always stops everyone
+        }
+
+        if (type == TileType.Block) return passBlocks;
+        if (type == TileType.Bomb) return false;
+
+        return true; // Empty, Powerup, Exit
+    }
+
     public TileType GetTile(Vector2Int gridPos) => grid[gridPos.x, gridPos.y];
 
     public void SetTile(Vector2Int gridPos, TileType type)
