@@ -240,6 +240,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: enemes0.40
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 777be891dc6423c41aec4ac709c465b1, type: 3}
+      propertyPath: m_Layer
+      value: 13
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -247,6 +251,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 777be891dc6423c41aec4ac709c465b1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5625364089606360165}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 777be891dc6423c41aec4ac709c465b1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1850835434258523973}
   m_SourcePrefab: {fileID: 100100000, guid: 777be891dc6423c41aec4ac709c465b1, type: 3}
 --- !u!1 &4741249231519660448 stripped
 GameObject:
@@ -268,6 +275,19 @@ MonoBehaviour:
   directionSource: {fileID: 0}
   worldOffset: {x: 0, y: 0, z: 0}
   turnWithMovement: 0
+--- !u!114 &1850835434258523973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4741249231519660448}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa1cbe55a7fa1f9428f8b563ae4b90e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::XRayLayer
+  layerName: XRayGhost
 --- !u!4 &5370434403378062106 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 777be891dc6423c41aec4ac709c465b1, type: 3}

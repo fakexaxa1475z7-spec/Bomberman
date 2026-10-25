@@ -246,6 +246,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: bombermanfinal2
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -256,6 +260,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7489704861838018137}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2786164405677892040}
   m_SourcePrefab: {fileID: 100100000, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}
 --- !u!1 &1665387666975663123 stripped
 GameObject:
@@ -299,6 +306,19 @@ MonoBehaviour:
   directionSource: {fileID: 0}
   worldOffset: {x: 0, y: 0.5, z: -0.5}
   turnWithMovement: 1
+--- !u!114 &2786164405677892040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665387666975663123}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa1cbe55a7fa1f9428f8b563ae4b90e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::XRayLayer
+  layerName: XRay
 --- !u!4 &2042230625222983337 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 473c130851533f84d8c3fd7b3fca6e0b, type: 3}

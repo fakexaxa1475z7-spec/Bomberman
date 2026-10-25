@@ -18,10 +18,10 @@ TagManager:
   - Player
   - Wall
   - Block
-  - 
-  - 
-  - 
-  - 
+  - XRayGhost
+  - XRayRandomGhost
+  - XRayTime
+  - XRay
   - 
   - 
   - 

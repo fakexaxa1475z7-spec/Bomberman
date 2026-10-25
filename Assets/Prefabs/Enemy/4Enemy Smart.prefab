@@ -236,6 +236,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: deadani0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 845f8f4726d55e246b0eef778ff8f139, type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -246,6 +250,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 845f8f4726d55e246b0eef778ff8f139, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3086015193050046873}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 845f8f4726d55e246b0eef778ff8f139, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6780794654788851150}
   m_SourcePrefab: {fileID: 100100000, guid: 845f8f4726d55e246b0eef778ff8f139, type: 3}
 --- !u!1 &2522140483329592938 stripped
 GameObject:
@@ -289,6 +296,19 @@ MonoBehaviour:
   directionSource: {fileID: 0}
   worldOffset: {x: 0, y: 0, z: -0.5}
   turnWithMovement: 1
+--- !u!114 &6780794654788851150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2522140483329592938}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa1cbe55a7fa1f9428f8b563ae4b90e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::XRayLayer
+  layerName: XRay
 --- !u!4 &2903592250184193232 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 845f8f4726d55e246b0eef778ff8f139, type: 3}

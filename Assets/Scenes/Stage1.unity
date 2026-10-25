@@ -6950,6 +6950,144 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d4ba62b6361211a4eb46d78714ba7507, type: 3}
+--- !u!1 &1140531317
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1140531322}
+  - component: {fileID: 1140531321}
+  - component: {fileID: 1140531320}
+  - component: {fileID: 1140531319}
+  - component: {fileID: 1140531318}
+  m_Layer: 0
+  m_Name: 'Gamemanager '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1140531318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140531317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa535256c598af045a0f47b3933e594e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StageManager
+  exitItemPrefab: {fileID: 1017867303766633786, guid: 4cf744bbe1d1e92438326d7d86491970, type: 3}
+--- !u!114 &1140531319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140531317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b49e2ccba9b79646bef745f257e7fc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  enemies:
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: 40f42a19006677a4b87bd28ce7f283a4, type: 3}
+    count: 2
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: af3cc94238760394caa2437f00b9df11, type: 3}
+    count: 2
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: 20f85842afcb45f4a8e9ffe6d4753e18, type: 3}
+    count: 0
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: d7bb447f0b946e04e8cc493791d77f43, type: 3}
+    count: 0
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: d2e62fe0dc4ad124a9f988c3061fd405, type: 3}
+    count: 0
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: 82bede5a4183701478423365c1cab6c4, type: 3}
+    count: 0
+  - label: 
+    prefab: {fileID: 3835284016031400613, guid: 221897933bab9c24b86e8e329550a936, type: 3}
+    count: 0
+  timeOutEnemyPrefab: {fileID: 3835284016031400613, guid: b1578f4436142964693889a5b24159b7, type: 3}
+  timeOutEnemyCount: 1
+  timeOutMinDistanceFromPlayer: 8
+  minDistanceFromPlayerSpawns: 6
+  minDistanceBetweenEnemies: 2
+  minOpenAreaSize: 4
+--- !u!114 &1140531320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140531317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6539f1403b5995d448449d3f20475f6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
+  playerPrefab: {fileID: 9218345576290993236, guid: db8e79960d3160b4ebf8e54ec765ee26, type: 3}
+  spawnIndex: 0
+  arenaCamera: {fileID: 330585548}
+--- !u!114 &1140531321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140531317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84529750727490a4c97a6b7b3adf5d4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GridManager
+  debugShowExitBlock: 1
+  debugExitColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  debugLogLayout: 0
+  width: 31
+  height: 13
+  tileSize: 1
+  floorPrefabs:
+  - {fileID: 8028301032741196093, guid: 199bbb32ff2c841448ed20372283629f, type: 3}
+  - {fileID: 8028301032741196093, guid: 1863b727894965f43a1c00a531d6c131, type: 3}
+  - {fileID: 8028301032741196093, guid: f8a137ffeee8c85438c5ba94703a10a9, type: 3}
+  wallPrefabs:
+  - {fileID: 5453299534465241181, guid: 6759fb0e25e57424fb453c93ce1c634d, type: 3}
+  - {fileID: 5453299534465241181, guid: 4428836c563bf254b8d2c31c5a7f565d, type: 3}
+  - {fileID: 5453299534465241181, guid: 4d350842ba8215e439c1c76d3280809a, type: 3}
+  blockPrefabs:
+  - {fileID: 4617447207701625058, guid: 6fdf662233ea9d845b6819bd82ff514e, type: 3}
+  - {fileID: 4617447207701625058, guid: 628fa6f7b68feb14084b9d38b36767cb, type: 3}
+  - {fileID: 4617447207701625058, guid: e1ed9f014495ff347bacc7f20092f317, type: 3}
+  blockDensity: 0.4
+  spawnClearRadius: 2
+  exitZoneWidthFraction: 0.25
+  itemDrops: []
+  dropChance: 0.2
+--- !u!4 &1140531322
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140531317}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1150226238 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ccce04b2e64a1f74e98816f9699ca93c, type: 3}
@@ -10101,132 +10239,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: bc2a9fdea584fab45b8f23d48c4f4cd8, type: 3}
---- !u!1 &1540684750
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1540684752}
-  - component: {fileID: 1540684751}
-  - component: {fileID: 1540684753}
-  - component: {fileID: 1540684754}
-  - component: {fileID: 1540684755}
-  m_Layer: 0
-  m_Name: Gamemanager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1540684751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1540684750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84529750727490a4c97a6b7b3adf5d4a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GridManager
-  debugShowExitBlock: 1
-  debugExitColor: {r: 0.8001013, g: 0, b: 1, a: 1}
-  debugLogLayout: 1
-  width: 31
-  height: 13
-  tileSize: 1
-  floorPrefabs:
-  - {fileID: 8028301032741196093, guid: 0afcb11f94fdbbd46a9c9178df9910b2, type: 3}
-  - {fileID: 8028301032741196093, guid: 7ab8193d76c8b7d4ba9b8dbaba298761, type: 3}
-  - {fileID: 8028301032741196093, guid: 7a1e9cce37be0f645b74fe032f5fc1dc, type: 3}
-  wallPrefabs:
-  - {fileID: 5453299534465241181, guid: be14a79bc1ccf48409c5c692eadcb49b, type: 3}
-  - {fileID: 5453299534465241181, guid: bfe86dbb7c40f7540921f86b9d53f7c1, type: 3}
-  - {fileID: 5453299534465241181, guid: 8b93128f1537d52489f2babd91fa503b, type: 3}
-  - {fileID: 5453299534465241181, guid: 6244abc0e3f2532428be7c2cdd91f5ca, type: 3}
-  - {fileID: 5453299534465241181, guid: a3e7f5bebf645dd40a8d25281a247026, type: 3}
-  - {fileID: 5453299534465241181, guid: 98ff13071723c4648bd6b8d919dd828f, type: 3}
-  blockPrefabs:
-  - {fileID: 4617447207701625058, guid: eb2f11463d1dc7449b5907c0602faed0, type: 3}
-  - {fileID: 4617447207701625058, guid: c905270827ff46949bd43d59c60952e7, type: 3}
-  - {fileID: 4617447207701625058, guid: 017862f66c7a7a14c9c50c1d4495937e, type: 3}
-  blockDensity: 0.4
-  spawnClearRadius: 1
-  exitZoneWidthFraction: 0.25
-  itemDrops: []
-  dropChance: 0.2
---- !u!4 &1540684752
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1540684750}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1540684753
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1540684750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6539f1403b5995d448449d3f20475f6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerSpawner
-  playerPrefab: {fileID: 9218345576290993236, guid: db8e79960d3160b4ebf8e54ec765ee26, type: 3}
-  spawnIndex: 0
-  arenaCamera: {fileID: 330585548}
---- !u!114 &1540684754
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1540684750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7b49e2ccba9b79646bef745f257e7fc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
-  enemies:
-  - label: 
-    prefab: {fileID: 3835284016031400613, guid: 40f42a19006677a4b87bd28ce7f283a4, type: 3}
-    count: 2
-  - label: 
-    prefab: {fileID: 3835284016031400613, guid: af3cc94238760394caa2437f00b9df11, type: 3}
-    count: 1
-  timeOutEnemyPrefab: {fileID: 3835284016031400613, guid: b1578f4436142964693889a5b24159b7, type: 3}
-  timeOutEnemyCount: 1
-  timeOutMinDistanceFromPlayer: 8
-  minDistanceFromPlayerSpawns: 6
-  minDistanceBetweenEnemies: 2
-  minOpenAreaSize: 4
---- !u!114 &1540684755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1540684750}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fa535256c598af045a0f47b3933e594e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StageManager
-  exitItemPrefab: {fileID: 1017867303766633786, guid: 4cf744bbe1d1e92438326d7d86491970, type: 3}
 --- !u!1001 &1548872698
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14109,7 +14121,7 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 1540684752}
+  - {fileID: 1140531322}
   - {fileID: 1898927374}
   - {fileID: 410087041}
   - {fileID: 832575519}

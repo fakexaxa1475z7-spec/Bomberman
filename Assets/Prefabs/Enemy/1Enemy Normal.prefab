@@ -129,6 +129,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 1
+  hitCooldown: 0.6
+  scoreValue: 100
 --- !u!114 &5346306867663220849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,8 +157,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMovement
   enemyType: 0
-  normalSpeed: 1
-  fastSpeed: 2
+  useCustomStats: 0
+  customStats:
+    speed: 0
+    pacing: 0
+    paceMinSpeed: 0
+    paceMaxSpeed: 0
+    pacePeriod: 0
+    passBlocks: 0
+    passWalls: 0
+    directionalBias: 0
+    erraticChance: 0
+    chase: 0
+    chaseRange: 0
+    loseRange: 0
+    dodgeBombs: 0
 --- !u!1001 &1726816713525220351
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -221,6 +236,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: enemes0.31
       objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 0118acfd9ea2ac4439dc02042e0877cd, type: 3}
+      propertyPath: m_Layer
+      value: 16
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -231,6 +250,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0118acfd9ea2ac4439dc02042e0877cd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7882971549162710738}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0118acfd9ea2ac4439dc02042e0877cd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8606387369842132178}
   m_SourcePrefab: {fileID: 100100000, guid: 0118acfd9ea2ac4439dc02042e0877cd, type: 3}
 --- !u!4 &1187925400548652052 stripped
 Transform:
@@ -279,3 +301,16 @@ MonoBehaviour:
   directionSource: {fileID: 0}
   worldOffset: {x: 0, y: 0, z: -0.5}
   turnWithMovement: 0
+--- !u!114 &8606387369842132178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1961189506059988654}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa1cbe55a7fa1f9428f8b563ae4b90e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::XRayLayer
+  layerName: XRay
