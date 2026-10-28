@@ -13,6 +13,10 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI lifeText;
     [SerializeField] private CanvasGroup hudCanvasGroup;
 
+    [Header("Time Limit")]
+    [Tooltip("Seconds per stage. 0 = no limit (timer counts up and no Time Out enemy).")]
+    [SerializeField] private float stageTimeLimit = 200f;
+
     [Header("Game Over")]
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private float delayBeforeGameOver = 1f;
@@ -33,16 +37,17 @@ public class HUDManager : MonoBehaviour
     [SerializeField] private int mainMenuBuildIndex = 0;
     [SerializeField] private int winSceneBuildIndex = 5;
 
-    [Header("Time Limit")]
-    [SerializeField] private float stageTimeLimit = 200f; // seconds, 0 = no limit
+    // Raised once per stage when the countdown reaches 0
     public event System.Action OnTimeOut;
-    private bool timeOutFired = false;
 
     public int CurrentScore => score;
+    public bool IsTimeOut => timeOutFired;
 
     private int score = 0;
-    private float stageTimer = 0f;
+    private float stageTimer = 0f;   // seconds elapsed in this stage (this is what gets saved)
     private bool timerRunning = false;
+    private bool timeOutFired = false;
+
     private PlayerHealth trackedPlayerHealth;
     private PlayerGridMovement trackedMovement;
     private BombPlacer trackedBombPlacer;
@@ -71,6 +76,7 @@ public class HUDManager : MonoBehaviour
 
         Instance = this;
         UpdateScoreText();
+        UpdateTimeText();
 
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
         if (pausePanel != null) pausePanel.SetActive(false);
@@ -128,6 +134,7 @@ public class HUDManager : MonoBehaviour
         if (!isNonGameplay)
         {
             ResetTimer();
+            timerRunning = true; // starts with the stage; Update() waits for any fade to finish before ticking
             StartCoroutine(FindAndTrackPlayer());
         }
         else
@@ -190,7 +197,10 @@ public class HUDManager : MonoBehaviour
             }
 
             UpdateLifeText(trackedPlayerHealth.CurrentHealth, trackedPlayerHealth.MaxHealth);
-            timerRunning = true;
+        }
+        else
+        {
+            Debug.LogWarning("HUDManager: no PlayerHealth found in this stage within 3 seconds.");
         }
     }
 
@@ -276,6 +286,7 @@ public class HUDManager : MonoBehaviour
         SetPlayerControlsEnabled(false);
 
         if (pausePanel != null) pausePanel.SetActive(true);
+
         AudioManager.Instance?.SetDucked(true);
     }
 
@@ -289,8 +300,9 @@ public class HUDManager : MonoBehaviour
         if (pausePanel != null) pausePanel.SetActive(false);
         if (saveCodePanel != null) saveCodePanel.SetActive(false);
 
-        StartCoroutine(ReenableControlsNextFrame());
         AudioManager.Instance?.SetDucked(false);
+
+        StartCoroutine(ReenableControlsNextFrame());
     }
 
     IEnumerator ReenableControlsNextFrame()
@@ -346,7 +358,7 @@ public class HUDManager : MonoBehaviour
             score = score,
             gridX = trackedMovement.CurrentGridPos.x,
             gridY = trackedMovement.CurrentGridPos.y,
-            timeSeconds = stageTimer,
+            timeSeconds = stageTimer, // elapsed seconds; the countdown is derived from this
             blockGrid = GridManager.Instance.GetBlockGridString(),
             hasExit = exitPos.HasValue,
             exitX = exitPos?.x ?? 0,
@@ -425,13 +437,16 @@ public class HUDManager : MonoBehaviour
     {
         if (!timerRunning) return;
 
+        // Don't tick behind the black fade screen (stage intro / outro)
+        if (StageFlowManager.Instance != null && StageFlowManager.Instance.IsTransitioning) return;
+
         stageTimer += Time.deltaTime;
         UpdateTimeText();
 
         if (!timeOutFired && stageTimeLimit > 0f && stageTimer >= stageTimeLimit)
         {
             timeOutFired = true;
-            OnTimeOut?.Invoke();
+            OnTimeOut?.Invoke(); // EnemySpawner spawns the Time Out enemy
         }
     }
 
@@ -447,12 +462,23 @@ public class HUDManager : MonoBehaviour
     {
         if (timeText == null) return;
 
-        // Counts DOWN when there's a time limit, up otherwise
+        // Countdown when there's a time limit, otherwise count up
         int shown = stageTimeLimit > 0f
             ? Mathf.CeilToInt(Mathf.Max(0f, stageTimeLimit - stageTimer))
             : Mathf.FloorToInt(stageTimer);
 
         timeText.text = $"TIME {shown}";
+    }
+
+    [ContextMenu("Test: force time out")]
+    void ForceTimeOut()
+    {
+        if (timeOutFired) return;
+
+        timeOutFired = true;
+        stageTimer = Mathf.Max(stageTimer, stageTimeLimit);
+        UpdateTimeText();
+        OnTimeOut?.Invoke();
     }
 
     void UpdateLifeText(int current, int max)
@@ -467,6 +493,8 @@ public class HUDManager : MonoBehaviour
     {
         score += amount;
         UpdateScoreText();
+
+        TopScore.Submit(score); // saves automatically when this run passes the record
     }
 
     public void ResetScore()

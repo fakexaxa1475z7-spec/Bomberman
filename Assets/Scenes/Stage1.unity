@@ -7057,17 +7057,17 @@ MonoBehaviour:
   height: 13
   tileSize: 1
   floorPrefabs:
-  - {fileID: 8028301032741196093, guid: 199bbb32ff2c841448ed20372283629f, type: 3}
-  - {fileID: 8028301032741196093, guid: 1863b727894965f43a1c00a531d6c131, type: 3}
-  - {fileID: 8028301032741196093, guid: f8a137ffeee8c85438c5ba94703a10a9, type: 3}
+  - {fileID: 8028301032741196093, guid: 0afcb11f94fdbbd46a9c9178df9910b2, type: 3}
+  - {fileID: 8028301032741196093, guid: 7ab8193d76c8b7d4ba9b8dbaba298761, type: 3}
+  - {fileID: 8028301032741196093, guid: 7a1e9cce37be0f645b74fe032f5fc1dc, type: 3}
   wallPrefabs:
-  - {fileID: 5453299534465241181, guid: 6759fb0e25e57424fb453c93ce1c634d, type: 3}
-  - {fileID: 5453299534465241181, guid: 4428836c563bf254b8d2c31c5a7f565d, type: 3}
-  - {fileID: 5453299534465241181, guid: 4d350842ba8215e439c1c76d3280809a, type: 3}
+  - {fileID: 5453299534465241181, guid: be14a79bc1ccf48409c5c692eadcb49b, type: 3}
+  - {fileID: 5453299534465241181, guid: be14a79bc1ccf48409c5c692eadcb49b, type: 3}
+  - {fileID: 5453299534465241181, guid: 8b93128f1537d52489f2babd91fa503b, type: 3}
   blockPrefabs:
-  - {fileID: 4617447207701625058, guid: 6fdf662233ea9d845b6819bd82ff514e, type: 3}
-  - {fileID: 4617447207701625058, guid: 628fa6f7b68feb14084b9d38b36767cb, type: 3}
-  - {fileID: 4617447207701625058, guid: e1ed9f014495ff347bacc7f20092f317, type: 3}
+  - {fileID: 4617447207701625058, guid: eb2f11463d1dc7449b5907c0602faed0, type: 3}
+  - {fileID: 4617447207701625058, guid: c905270827ff46949bd43d59c60952e7, type: 3}
+  - {fileID: 4617447207701625058, guid: 017862f66c7a7a14c9c50c1d4495937e, type: 3}
   blockDensity: 0.4
   spawnClearRadius: 2
   exitZoneWidthFraction: 0.25

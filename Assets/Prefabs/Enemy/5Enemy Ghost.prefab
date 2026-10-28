@@ -131,6 +131,12 @@ MonoBehaviour:
   maxHealth: 1
   hitCooldown: 0.6
   scoreValue: 1000
+  showScorePopup: 1
+  popupColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  popupSize: 5
+  popupRise: 1.2
+  popupDuration: 1
+  popupOffset: {x: 0, y: 3, z: 0.2}
 --- !u!114 &5346306867663220849
 MonoBehaviour:
   m_ObjectHideFlags: 0

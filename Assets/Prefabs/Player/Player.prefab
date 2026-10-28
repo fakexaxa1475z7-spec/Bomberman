@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8e4cf0e0dc5efb42a944eca866254bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
-  startingHealth: 2
+  startingHealth: 1000
   maxHealth: 1000
   invincibilityDuration: 1.5
 --- !u!1001 &2007985942948452674
