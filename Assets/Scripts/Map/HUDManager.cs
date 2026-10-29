@@ -204,6 +204,8 @@ public class HUDManager : MonoBehaviour
         }
     }
 
+    // ---------- Death / Game Over ----------
+
     void HandlePlayerDeath()
     {
         timerRunning = false;
@@ -233,6 +235,7 @@ public class HUDManager : MonoBehaviour
         persistedHealth = -1;
         pendingTimeSeconds = -1f;
         pendingGridData = null;
+        PlayerUpgrades.Reset();
 
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
         StageFlowManager.Instance?.LoadSceneWithFade(currentIndex, null);
@@ -249,12 +252,12 @@ public class HUDManager : MonoBehaviour
     public void OnPlayAgainPressed()
     {
         if (winPanel != null) winPanel.SetActive(false);
-        persistedHealth = -1;
-        pendingTimeSeconds = -1f;
-        pendingGridData = null;
 
+        ResetScore(); // new run: score, health, upgrades and any pending saved map
         StageFlowManager.Instance?.LoadSceneWithFade(1, "Stage 1");
     }
+
+    // ---------- Pause ----------
 
     void LateUpdate()
     {
@@ -326,6 +329,7 @@ public class HUDManager : MonoBehaviour
         persistedHealth = -1;
         pendingTimeSeconds = -1f;
         pendingGridData = null;
+        PlayerUpgrades.Reset();
 
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
         StageFlowManager.Instance?.LoadSceneWithFade(currentIndex, null);
@@ -362,7 +366,12 @@ public class HUDManager : MonoBehaviour
             blockGrid = GridManager.Instance.GetBlockGridString(),
             hasExit = exitPos.HasValue,
             exitX = exitPos?.x ?? 0,
-            exitY = exitPos?.y ?? 0
+            exitY = exitPos?.y ?? 0,
+
+            upBombs = PlayerUpgrades.Bombs,
+            upRadius = PlayerUpgrades.Radius,
+            upSpeed = PlayerUpgrades.SpeedLevel,
+            upRemote = PlayerUpgrades.HasRemote
         };
 
         string code = SaveSystem.GenerateUniqueCode();
@@ -406,6 +415,12 @@ public class HUDManager : MonoBehaviour
         }
 
         persistedHealth = data.health;
+
+        PlayerUpgrades.Bombs = Mathf.Clamp(data.upBombs, 1, PlayerUpgrades.MaxBombs);
+        PlayerUpgrades.Radius = Mathf.Clamp(data.upRadius, 1, PlayerUpgrades.MaxRadius);
+        PlayerUpgrades.SpeedLevel = Mathf.Clamp(data.upSpeed, 0, PlayerUpgrades.MaxSpeedLevel);
+        PlayerUpgrades.HasRemote = data.upRemote;
+
         score = data.score;
         UpdateScoreText();
 
@@ -497,12 +512,14 @@ public class HUDManager : MonoBehaviour
         TopScore.Submit(score); // saves automatically when this run passes the record
     }
 
+    // Start of a brand new run (also used by Return to Menu and Play Again)
     public void ResetScore()
     {
         score = 0;
         persistedHealth = -1;
         pendingTimeSeconds = -1f;
         pendingGridData = null;
+        PlayerUpgrades.Reset();
         UpdateScoreText();
     }
 

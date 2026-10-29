@@ -13,6 +13,11 @@ public class SaveSlotData
     public bool hasExit;
     public int exitX;
     public int exitY;
+
+    public int upBombs = 1;
+    public int upRadius = 1;
+    public int upSpeed = 0;
+    public bool upRemote = false;
 }
 
 public static class SaveSystem

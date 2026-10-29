@@ -1,7 +1,10 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+public interface IDamageable
+{
+    void TakeDamage(int amount);
+}
 public class ExplosionHazard : MonoBehaviour
 {
     private static readonly Dictionary<Vector2Int, int> activeTiles = new Dictionary<Vector2Int, int>();

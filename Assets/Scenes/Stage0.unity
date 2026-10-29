@@ -505,7 +505,13 @@ MonoBehaviour:
   blockDensity: 0.4
   spawnClearRadius: 1
   exitZoneWidthFraction: 0.25
-  itemDrops: []
+  itemDrops:
+  - prefab: {fileID: 1017867303766633786, guid: 2e036ae09def96e4294a838826f519ad, type: 3}
+    weight: 2
+  - prefab: {fileID: 1017867303766633786, guid: e54ed4fc0eca75547af214b474f9c239, type: 3}
+    weight: 2
+  - prefab: {fileID: 1017867303766633786, guid: 5da895dadef3f2d40ab9bc3e811c8159, type: 3}
+    weight: 1
   dropChance: 0.2
 --- !u!4 &1011936088
 Transform:

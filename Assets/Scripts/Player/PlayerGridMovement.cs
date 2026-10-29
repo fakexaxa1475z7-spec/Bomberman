@@ -6,6 +6,8 @@ public class PlayerGridMovement : MonoBehaviour
     [SerializeField] private float moveSpeed = 4f;
     [SerializeField] private float playerRadius = 0.45f;
 
+    [SerializeField] private float speedPerLevel = 0.5f; // extra tiles/second for each Speed Up
+
     public float PlayerRadius => playerRadius;
 
     [Header("Corner Assist")]
@@ -27,7 +29,7 @@ public class PlayerGridMovement : MonoBehaviour
     {
         Vector2 input = ReadInput();
         Vector3 moveDir = new Vector3(input.x, 0f, input.y);
-        float distance = moveSpeed * Time.deltaTime;
+        float distance = (moveSpeed + PlayerUpgrades.SpeedLevel * speedPerLevel) * Time.deltaTime;
 
         bool movedX = false;
         bool movedZ = false;
