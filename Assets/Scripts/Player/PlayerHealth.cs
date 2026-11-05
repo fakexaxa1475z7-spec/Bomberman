@@ -29,6 +29,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public void TakeDamage(int amount)
     {
+        if (PlayerUpgrades.IsInvincible) return;
         if (isDead || isInvincible) return;
 
         currentHealth -= amount;

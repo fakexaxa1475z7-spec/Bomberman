@@ -19,6 +19,7 @@ public class PlayerGridMovement : MonoBehaviour
     public float CurrentSpeed { get; private set; }
 
     public Vector2Int CurrentGridPos => GridManager.Instance.WorldToGrid(transform.position);
+    public float TotalSpeed => moveSpeed + PlayerUpgrades.SpeedLevel * speedPerLevel;
 
     void Awake()
     {
@@ -29,7 +30,7 @@ public class PlayerGridMovement : MonoBehaviour
     {
         Vector2 input = ReadInput();
         Vector3 moveDir = new Vector3(input.x, 0f, input.y);
-        float distance = (moveSpeed + PlayerUpgrades.SpeedLevel * speedPerLevel) * Time.deltaTime;
+        float distance = TotalSpeed * Time.deltaTime;
 
         bool movedX = false;
         bool movedZ = false;
@@ -78,7 +79,11 @@ public class PlayerGridMovement : MonoBehaviour
     bool IsFree(Vector3 worldPos)
     {
         Vector2Int? exempt = bombPlacer != null ? bombPlacer.GetExemptTile() : null;
-        return GridManager.Instance.IsWorldPositionFree(worldPos, playerRadius, exempt);
+
+        return GridManager.Instance.IsWorldPositionFreeForPlayer(
+            worldPos, playerRadius, exempt,
+            PlayerUpgrades.HasWallPass,
+            PlayerUpgrades.HasBombPass);
     }
 
     // Nudges the player toward the centre of the corridor they're trying to enter,

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum PowerUpType { BombUp, FireUp, SpeedUp, RemoteControl }
+public enum PowerUpType { BombUp, FireUp, SpeedUp, RemoteControl, WallPass, BombPass, FlamePass, InvincibleSuit }
 
 public class PowerUpItem : MonoBehaviour
 {
@@ -35,29 +35,49 @@ public class PowerUpItem : MonoBehaviour
 
     void Collect()
     {
-        bool applied;
         string label;
 
         switch (type)
         {
             case PowerUpType.BombUp:
-                applied = PlayerUpgrades.AddBomb();
-                label = applied ? "BOMB UP" : "BOMB MAX";
+                label = PlayerUpgrades.AddBomb() ? "BOMB UP" : "BOMB MAX";
                 break;
 
             case PowerUpType.FireUp:
-                applied = PlayerUpgrades.AddRadius();
-                label = applied ? "FIRE UP" : "FIRE MAX";
+                label = PlayerUpgrades.AddRadius() ? "FIRE UP" : "FIRE MAX";
                 break;
 
             case PowerUpType.SpeedUp:
-                applied = PlayerUpgrades.AddSpeed();
-                label = applied ? "SPEED UP" : "SPEED MAX";
+                label = PlayerUpgrades.AddSpeed() ? "SPEED UP" : "SPEED MAX";
                 break;
 
-            default: // RemoteControl
-                applied = PlayerUpgrades.GiveRemote();
-                label = applied ? "REMOTE" : "REMOTE";
+            case PowerUpType.RemoteControl:
+                PlayerUpgrades.GiveRemote();
+                label = "REMOTE";
+                break;
+
+            case PowerUpType.WallPass:
+                PlayerUpgrades.GiveWallPass();
+                label = "WALL PASS";
+                break;
+
+            case PowerUpType.BombPass:
+                PlayerUpgrades.GiveBombPass();
+                label = "BOMB PASS";
+                break;
+
+            case PowerUpType.FlamePass:
+                PlayerUpgrades.GiveFlamePass();
+                label = "FLAME PASS";
+                break;
+
+            case PowerUpType.InvincibleSuit:
+                PlayerUpgrades.StartInvincible();
+                label = "INVINCIBLE";
+                break;
+
+            default:
+                label = "";
                 break;
         }
 
@@ -66,7 +86,8 @@ public class PowerUpItem : MonoBehaviour
 
         AudioManager.Instance?.PlaySfx(pickupSfx);
 
-        ScorePopup.Spawn(transform.position + new Vector3(0f, 3f, 0.2f), label, popupColor, 3.5f, 0f, 1f);
+        if (label.Length > 0)
+            ScorePopup.Spawn(transform.position + new Vector3(0f, 3f, 0.2f), label, popupColor, 3.5f, 0f, 1f);
 
         Destroy(gameObject);
     }

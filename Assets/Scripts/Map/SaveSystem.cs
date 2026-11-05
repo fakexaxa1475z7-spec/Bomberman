@@ -18,6 +18,10 @@ public class SaveSlotData
     public int upRadius = 1;
     public int upSpeed = 0;
     public bool upRemote = false;
+    public bool upWallPass = false;
+    public bool upBombPass = false;
+    public bool upFlamePass = false;
+    public float upInvincible = 0f;
 }
 
 public static class SaveSystem

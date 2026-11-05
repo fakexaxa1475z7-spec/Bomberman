@@ -60,11 +60,14 @@ public class ExplosionHazard : MonoBehaviour
 
     void CheckDamage()
     {
-        var players = FindObjectsByType<PlayerGridMovement>(FindObjectsSortMode.None);
-        foreach (var player in players)
+        if (!PlayerUpgrades.HasFlamePass)
         {
-            if (player.CurrentGridPos == gridPos)
-                player.GetComponent<IDamageable>()?.TakeDamage(damageAmount);
+            var players = FindObjectsByType<PlayerGridMovement>(FindObjectsSortMode.None);
+            foreach (var player in players)
+            {
+                if (player.CurrentGridPos == gridPos)
+                    player.GetComponent<IDamageable>()?.TakeDamage(damageAmount);
+            }
         }
 
         var enemies = FindObjectsByType<EnemyMovement>(FindObjectsSortMode.None);

@@ -356,6 +356,40 @@ public class GridManager : MonoBehaviour
         TileType type = grid[gridPos.x, gridPos.y];
         return type == TileType.Empty || type == TileType.Powerup || type == TileType.Exit;
     }
+    // Player-specific walkability: Wall Pass lets the player through breakable blocks, Bomb Pass through bombs
+    public bool IsWalkableForPlayer(Vector2Int pos, bool passBlocks, bool passBombs)
+    {
+        if (pos.x < 0 || pos.x >= width || pos.y < 0 || pos.y >= height) return false;
+
+        TileType type = grid[pos.x, pos.y];
+
+        if (type == TileType.Block) return passBlocks;
+        if (type == TileType.Bomb) return passBombs;
+        if (type == TileType.Wall) return false; // solid walls always stop the player
+
+        return true; // Empty, Powerup, Exit
+    }
+
+    public bool IsWorldPositionFreeForPlayer(Vector3 worldPos, float radius, Vector2Int? exemptTile, bool passBlocks, bool passBombs)
+    {
+        Vector3[] corners =
+        {
+        worldPos + new Vector3(-radius, 0, -radius),
+        worldPos + new Vector3( radius, 0, -radius),
+        worldPos + new Vector3(-radius, 0,  radius),
+        worldPos + new Vector3( radius, 0,  radius)
+    };
+
+        foreach (var corner in corners)
+        {
+            Vector2Int cornerGrid = WorldToGrid(corner);
+
+            if (exemptTile.HasValue && cornerGrid == exemptTile.Value) continue;
+            if (!IsWalkableForPlayer(cornerGrid, passBlocks, passBombs)) return false;
+        }
+
+        return true;
+    }
 
     public bool CanEnemyEnter(Vector2Int pos, bool passBlocks, bool passWalls)
     {

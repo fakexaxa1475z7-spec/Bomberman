@@ -183,7 +183,7 @@ public class HUDManager : MonoBehaviour
                 hasPendingSpawnPos = false;
 
                 Vector2Int target = pendingSpawnPos;
-                if (!GridManager.Instance.IsWalkable(target))
+                if (!GridManager.Instance.IsWalkableForPlayer(target, PlayerUpgrades.HasWallPass, PlayerUpgrades.HasBombPass))
                     target = GridManager.Instance.SpawnPoints[0]; // saved tile is blocked, use the spawn corner
 
                 trackedMovement.transform.position = GridManager.Instance.GridToWorld(target);
@@ -371,7 +371,11 @@ public class HUDManager : MonoBehaviour
             upBombs = PlayerUpgrades.Bombs,
             upRadius = PlayerUpgrades.Radius,
             upSpeed = PlayerUpgrades.SpeedLevel,
-            upRemote = PlayerUpgrades.HasRemote
+            upRemote = PlayerUpgrades.HasRemote,
+            upWallPass = PlayerUpgrades.HasWallPass,
+            upBombPass = PlayerUpgrades.HasBombPass,
+            upFlamePass = PlayerUpgrades.HasFlamePass,
+            upInvincible = PlayerUpgrades.InvincibleRemaining
         };
 
         string code = SaveSystem.GenerateUniqueCode();
@@ -420,6 +424,10 @@ public class HUDManager : MonoBehaviour
         PlayerUpgrades.Radius = Mathf.Clamp(data.upRadius, 1, PlayerUpgrades.MaxRadius);
         PlayerUpgrades.SpeedLevel = Mathf.Clamp(data.upSpeed, 0, PlayerUpgrades.MaxSpeedLevel);
         PlayerUpgrades.HasRemote = data.upRemote;
+        PlayerUpgrades.HasWallPass = data.upWallPass;
+        PlayerUpgrades.HasBombPass = data.upBombPass;
+        PlayerUpgrades.HasFlamePass = data.upFlamePass;
+        PlayerUpgrades.InvincibleRemaining = Mathf.Clamp(data.upInvincible, 0f, PlayerUpgrades.InvincibleDuration);
 
         score = data.score;
         UpdateScoreText();
