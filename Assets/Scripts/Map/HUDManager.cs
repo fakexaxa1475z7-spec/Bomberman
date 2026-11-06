@@ -463,6 +463,10 @@ public class HUDManager : MonoBehaviour
         // Don't tick behind the black fade screen (stage intro / outro)
         if (StageFlowManager.Instance != null && StageFlowManager.Instance.IsTransitioning) return;
 
+        // Invincible Suit countdown (frozen while paused, because deltaTime is 0 then)
+        if (PlayerUpgrades.IsInvincible)
+            PlayerUpgrades.TickInvincible(Time.deltaTime);
+
         stageTimer += Time.deltaTime;
         UpdateTimeText();
 

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Makes the player model blink while the Invincible Suit is active (faster in the last seconds).
+// The countdown itself is handled by HUDManager.
 public class InvincibilityEffect : MonoBehaviour
 {
     [SerializeField] private float flickerInterval = 0.12f;
@@ -22,12 +24,6 @@ public class InvincibilityEffect : MonoBehaviour
 
     void Update()
     {
-        // Don't use up the suit behind the black stage-change screen
-        bool transitioning = StageFlowManager.Instance != null && StageFlowManager.Instance.IsTransitioning;
-
-        if (PlayerUpgrades.IsInvincible && !transitioning)
-            PlayerUpgrades.TickInvincible(Time.deltaTime);
-
         bool active = PlayerUpgrades.IsInvincible;
 
         if (active)
